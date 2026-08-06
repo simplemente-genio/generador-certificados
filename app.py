@@ -36,43 +36,43 @@ if archivo_excel is not None and imagen_base is not None:
             # Si falta alguna columna, el programa se detiene y muestra esto
             st.error("⚠️ El Excel debe tener exactamente estas 3 columnas: Nombre, Curso, Horas. ¡Por favor revisa tu archivo!")
         
-        # Creamos un "archivo ZIP virtual" en la memoria
-        buffer_zip = io.BytesIO()
+            # Creamos un "archivo ZIP virtual" en la memoria
+            buffer_zip = io.BytesIO()
         
-        with zipfile.ZipFile(buffer_zip, "w") as archivo_zip:
+            with zipfile.ZipFile(buffer_zip, "w") as archivo_zip:
             
-            # Usamos la fuente por defecto de la librería PIL para no complicarnos con rutas
-            fuente_texto = ImageFont.load_default()
+                # Usamos la fuente por defecto de la librería PIL para no complicarnos con rutas
+                fuente_texto = ImageFont.load_default()
             
-            for indice, fila in alumnos.iterrows():
+                for indice, fila in alumnos.iterrows():
                 nombre_alumno = fila['Nombre']
                 nombre_curso = fila['Curso']
                 cantidad_horas = str(fila['Horas'])
                 
-                # Abrimos la imagen que subió el usuario
-                certificado = Image.open(imagen_base)
-                dibujo = ImageDraw.Draw(certificado)
+                    # Abrimos la imagen que subió el usuario
+                    certificado = Image.open(imagen_base)
+                    dibujo = ImageDraw.Draw(certificado)
                 
-                # Escribimos los textos
-                dibujo.text((400, 250), nombre_alumno, fill="black", anchor="mm", font=fuente_texto)
-                dibujo.text((400, 320), f"Curso: {nombre_curso}", fill="black", anchor="mm", font=fuente_texto)
-                dibujo.text((400, 380), f"Duración: {cantidad_horas} hrs", fill="black", anchor="mm", font=fuente_texto)
+                    # Escribimos los textos
+                    dibujo.text((400, 250), nombre_alumno, fill="black", anchor="mm", font=fuente_texto)
+                    dibujo.text((400, 320), f"Curso: {nombre_curso}", fill="black", anchor="mm", font=fuente_texto)
+                    dibujo.text((400, 380), f"Duración: {cantidad_horas} hrs", fill="black", anchor="mm", font=fuente_texto)
                 
-                # Convertimos a PDF y lo guardamos en una memoria temporal
-                certificado_pdf = certificado.convert('RGB')
-                buffer_pdf = io.BytesIO()
-                certificado_pdf.save(buffer_pdf, format="PDF")
+                    # Convertimos a PDF y lo guardamos en una memoria temporal
+                    certificado_pdf = certificado.convert('RGB')
+                    buffer_pdf = io.BytesIO()
+                    certificado_pdf.save(buffer_pdf, format="PDF")
                 
-                # Metemos ese PDF dentro de nuestro archivo ZIP
-                archivo_zip.writestr(f"Certificado_{nombre_alumno}.pdf", buffer_pdf.getvalue())
+                    # Metemos ese PDF dentro de nuestro archivo ZIP
+                    archivo_zip.writestr(f"Certificado_{nombre_alumno}.pdf", buffer_pdf.getvalue())
         
-        # Lanzamos globos de celebración en la pantalla
-        st.balloons()
+            # Lanzamos globos de celebración en la pantalla
+            st.balloons()
         
-        # 4. Botón final para que el colega descargue su ZIP con todos los certificados
-        st.download_button(
-            label="⬇️ Descargar todos los certificados (.zip)",
-            data=buffer_zip.getvalue(),
-            file_name="Certificados_Generados.zip",
-            mime="application/zip"
+            # 4. Botón final para que el colega descargue su ZIP con todos los certificados
+            st.download_button(
+                label="⬇️ Descargar todos los certificados (.zip)",
+                data=buffer_zip.getvalue(),
+                file_name="Certificados_Generados.zip",
+                mime="application/zip"
         )
