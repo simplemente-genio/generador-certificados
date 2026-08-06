@@ -94,7 +94,7 @@ if archivo_excel is not None and imagen_base is not None:
                         periodo_semestre = str(fila['Semestre']).strip()
                         
                         # Armamos el párrafo redactado completo
-                        texto_parrafo_completo = f"Académico de la {universidad_origen}, desarrolló Clases Espejo del curso: “{nombre_curso}” realizado en colaboración con la docente, {docente_colaborador} de la Universidad Católica de Temuco. Este curso tuvo lugar el {periodo_semestre}. La actividad contribuyó al desarrollo de competencias interculturales de los estudiantes y a la internacionalización del currículo."
+                        texto_parrafo_completo = f"Estudiante de la {universidad_origen}, Participó en el Curso COIL “{nombre_curso}” realizado en colaboración con la docente, {docente_colaborador} de la Universidad Católica de Temuco. Este curso tuvo lugar el {periodo_semestre}. La actividad contribuyó al desarrollo de competencias interculturales de los estudiantes y a la internacionalización del currículo."
                         
                         # *** La Magia del Text Wrapping (Cortar Párrafo) ***
                         parrafo_cortado = textwrap.fill(texto_parrafo_completo, width=75)
