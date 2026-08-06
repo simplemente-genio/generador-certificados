@@ -114,10 +114,10 @@ if archivo_excel is not None and imagen_base is not None:
                         
                         
                         # 2. Nombre del Docente (Negrita, Grande, Centrado)
-                        dibujo.text((centro_x, 950), nombre_alumno, fill="#0070C0", anchor="mm", font=fuente_nombre)
+                        dibujo.text((centro_x, 1000), nombre_alumno, fill="#0070C0", anchor="mm", font=fuente_nombre)
                         
                         # 3. Párrafo Cortado (Normal, Mediano, Centrado, align="center")
-                        dibujo.text((centro_x, 1200), parrafo_cortado, fill="black", anchor="ma", align="center", font=fuente_parrafo, spacing=15)
+                        dibujo.text((centro_x, 1200), parrafo_cortado, fill="#858784", anchor="ma", align="center", font=fuente_parrafo, spacing=15)
                         
                         # 4. Fecha Automática (Esquina Inferior Derecha)
                         dibujo.text((ancho_imagen - 100, alto_imagen - 150), texto_fecha_final, fill="black", anchor="rm", font=fuente_fecha)
