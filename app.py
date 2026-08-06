@@ -67,7 +67,7 @@ if archivo_excel is not None and imagen_base is not None:
                     fuente_constancia = ImageFont.truetype("CALIBRIB.TTF", 80) # Título grande, negrita
                     fuente_nombre = ImageFont.truetype("CALIBRIB.TTF", 65)      # Nombre grande, negrita
                     fuente_parrafo = ImageFont.truetype("CALIBRI.TTF", 55)      # Párrafo normal, tamaño medio
-                    fuente_fecha = ImageFont.truetype("CALIBRI.TTF", 30)        # Fecha normal, tamaño pequeño
+                    fuente_fecha = ImageFont.truetype("CALIBRI.TTF",50)        # Fecha normal, tamaño pequeño
                 except OSError:
                     st.error("⚠️ No se encontraron los archivos de fuente 'CALIBRI.TTF' o 'CALIBRIB.TTF' en GitHub. Revisa tus archivos.")
                     st.stop()
@@ -117,7 +117,7 @@ if archivo_excel is not None and imagen_base is not None:
                         dibujo.text((centro_x, 850), nombre_alumno, fill="#0070C0", anchor="mm", font=fuente_nombre)
                         
                         # 3. Párrafo Cortado (Normal, Mediano, Centrado, align="center")
-                        dibujo.text((centro_x, 1000), parrafo_cortado, fill="#a6abad", anchor="ma", align="center", font=fuente_parrafo)
+                        dibujo.text((centro_x, 700), parrafo_cortado, fill="black", anchor="ma", align="center", font=fuente_parrafo, spacing=15)
                         
                         # 4. Fecha Automática (Esquina Inferior Derecha)
                         dibujo.text((ancho_imagen - 100, alto_imagen - 150), texto_fecha_final, fill="black", anchor="rm", font=fuente_fecha)
