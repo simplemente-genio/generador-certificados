@@ -9,144 +9,156 @@ import datetime
 # 1. Configuración de la página y Diseño Visual
 st.set_page_config(page_title="Generador Certificados COIL-UCT", layout="centered")
 
-# Mostramos el Banner Institucional (Recuerda subir 'banner.png' a GitHub)
+# Mostramos el Banner Institucional
 try:
     st.image("banner.png", use_container_width=True)
 except FileNotFoundError:
     st.warning("⚠️ No se encontró el archivo 'banner.png' en GitHub. Sube la imagen para ver el diseño completo.")
 
 st.title("🎓 Generador Automático de Certificados COIL-UCT")
-st.write("Bienvenido. Sube el Excel con los datos y la imagen base del diploma para generar todos los PDFs al instante.")
+st.write("Sube la lista de estudiantes en Excel y completa los datos de la actividad para generar los diplomas al instante.")
 
 # --- Sección de Ayuda para el Usuario ---
-with st.expander("📊 Ver estructura requerida del Nuevo Excel para Estudiantes"):
-    st.write("Tu archivo Excel (.csv) debe tener exactamente estas 7 columnas, respetando mayúsculas y tildes:")
-    st.code("Nombre, Universidad, Curso, Horas, Academico UCT, Academico Contraparte, Semestre")
-    st.write("**Ejemplo de una fila:** Juan Pérez, U. de Antioquia, Derecho Ambiental, 20, María Gómez, Carlos Ruiz, segundo semestre 2026")
+with st.expander("📊 Ver estructura requerida del Excel"):
+    st.write("Ahora tu Excel (.csv) solo necesita **una sola columna** con los nombres:")
+    st.code("Nombre")
+    st.write("**Ejemplo:**\nJuan Esteban Orjuela González\nMaría Fernanda Silva")
 
 # 2. Botones para subir archivos
-archivo_excel = st.file_uploader("1. Sube tu Excel actualizado (.csv)", type=["csv"])
-imagen_base = st.file_uploader("2. Sube el diseño limpio del diploma (sin textos variables, .png, .jpg)", type=["png", "jpg"])
+archivo_excel = st.file_uploader("1. Sube tu Excel de estudiantes (.csv)", type=["csv"])
+imagen_base = st.file_uploader("2. Sube el diseño limpio del diploma (.png, .jpg)", type=["png", "jpg"])
 
-# 3. Lógica Principal
+# 3. Formulario con datos del Curso / Actividad
 if archivo_excel is not None and imagen_base is not None:
     
-    st.markdown("### ⚙️ Configuración del Certificado")
-    # Selector interactivo para el tipo de actividad
-    tipo_actividad = st.selectbox("¿Qué tipo de actividad certificamos hoy?", ["Curso COIL", "MasterClass", "Clase Espejo"])
+    st.markdown("---")
+    st.markdown("### 📝 Datos de la Actividad Académica")
+    st.info("Completa estos campos una sola vez y se aplicarán a todos los certificados del lote:")
+
+    col1, col2 = st.columns(2)
     
+    with col1:
+        tipo_actividad = st.selectbox("Tipo de Actividad", ["curso COIL", "Masterclass", "Clase Espejo"])
+        nombre_actividad = st.text_input("Nombre de la actividad / Versión", "Ortesis UCT-ULEAM”, Versión 2026")
+        semestre = st.selectbox("Semestre", ["primer", "segundo"])
+        anio = st.text_input("Año de ejecución", "2026")
+        horas = st.text_input("Horas cronológicas totales", "12")
+
+    with col2:
+        carrera_uct = st.text_input("Carrera UCT", "Terapia Ocupacional")
+        asignatura_uct = st.text_input("Asignatura UCT", "PAA-03-F-003 Ortótica y Producto de Apoyo")
+        docente_uct = st.text_input("Académico(a) UCT", "Leonardo Cuevas Zepeda")
+        
+    st.markdown("#### 🤝 Datos de la Universidad Contraparte")
+    col3, col4 = st.columns(2)
+    
+    with col3:
+        universidad_contraparte = st.text_input("Universidad Contraparte", "Universidad Laica Eloy Alfaro de Manabí, Manta, (Ecuador)")
+        carrera_contraparte = st.text_input("Carrera Contraparte", "Terapia Ocupacional")
+
+    with col4:
+        asignatura_contraparte = st.text_input("Asignatura Contraparte", "Ortótica y Apoyo")
+        docente_contraparte = st.text_input("Académico(a) Contraparte", "Ricardo Bravo Zambrano")
+
+    st.markdown("---")
+
+    # 4. Botón de Generación
     if st.button("✨ Generar Todos los Certificados"):
         
         # Leemos el Excel
         alumnos = pd.read_csv(archivo_excel)
         
-        # Definimos las 7 columnas que exigimos ahora para estudiantes
-        columnas_necesarias = ['Nombre', 'Universidad', 'Curso', 'Horas', 'Academico UCT', 'Academico Contraparte', 'Semestre']
-        
-        # Verificamos si el Excel cumple las reglas
-        if all(columna in alumnos.columns for columna in columnas_necesarias):
+        # Verificamos que tenga la columna 'Nombre'
+        if 'Nombre' in alumnos.columns:
             
-            with st.spinner("Preparando la magia... por favor espera."):
-                st.success("¡Datos correctos! Iniciando generación.")
+            with st.spinner("Generando certificados... por favor espera."):
                 
-                # --- Preparación de Variables Globales (Fecha y Fuentes) ---
-                
-                # A. Generar Fecha Automática en Español
+                # --- Fecha Automática en Español ---
                 fecha_actual = datetime.date.today()
-                
                 meses_espanol = {
                     1: "enero", 2: "febrero", 3: "marzo", 4: "abril", 5: "mayo", 6: "junio",
                     7: "julio", 8: "agosto", 9: "septiembre", 10: "octubre", 11: "noviembre", 12: "diciembre"
                 }
-                
                 dia = fecha_actual.day
                 mes_nombre = meses_espanol[fecha_actual.month]
-                anio = fecha_actual.year
+                anio_actual = fecha_actual.year
+                texto_fecha_final = f"Temuco, {dia} de {mes_nombre} de {anio_actual}"
                 
-                texto_fecha_final = f"Temuco, {dia} de {mes_nombre} de {anio}"
-                
-                # B. Cargar Fuentes Calibri Reales (Subidas a GitHub)
+                # --- Cargar Fuentes ---
                 try:
-                    fuente_nombre = ImageFont.truetype("CALIBRIB.TTF", 65)      # Nombre grande, negrita
-                    fuente_parrafo = ImageFont.truetype("CALIBRI.TTF", 55)      # Párrafo normal, tamaño medio
-                    fuente_fecha = ImageFont.truetype("CALIBRI.TTF", 50)        # Fecha normal, tamaño pequeño
+                    fuente_nombre = ImageFont.truetype("CALIBRIB.TTF", 65)      # Nombre en Negrita
+                    fuente_parrafo = ImageFont.truetype("CALIBRI.TTF", 42)      # Párrafo normal
+                    fuente_cierre = ImageFont.truetype("CALIBRIB.TTF", 42)     # Cierre en Negrita
+                    fuente_fecha = ImageFont.truetype("CALIBRI.TTF", 40)        # Fecha
                 except OSError:
-                    st.error("⚠️ No se encontraron los archivos de fuente 'CALIBRI.TTF' o 'CALIBRIB.TTF' en GitHub. Revisa tus archivos.")
+                    st.error("⚠️ No se encontraron los archivos de fuente 'CALIBRI.TTF' o 'CALIBRIB.TTF' en GitHub. Revisa la carpeta.")
                     st.stop()
                 
-                # Creamos el archivo ZIP en memoria
+                # Zip en memoria
                 buffer_zip = io.BytesIO()
                 
                 with zipfile.ZipFile(buffer_zip, "w") as archivo_zip:
                     
-                    # --- Ciclo de Generación de Certificados ---
                     total_certificados = len(alumnos)
                     barra_progreso = st.progress(0)
                     
-                    # Inteligencia gramatical para el artículo ("el" Curso vs "la" MasterClass)
-                    articulo = "el" if tipo_actividad == "Curso COIL" else "la"
-                    
                     for indice, fila in alumnos.iterrows():
-                        # Actualizar barra de progreso
                         porcentaje = int((indice + 1) / total_certificados * 100)
                         barra_progreso.progress(porcentaje)
                         
-                        # Extraemos las variables
                         nombre_alumno = str(fila['Nombre']).strip()
-                        universidad_origen = str(fila['Universidad']).strip()
-                        nombre_curso = str(fila['Curso']).strip()
-                        horas_curso = str(fila['Horas']).strip()
-                        docente_uct = str(fila['Academico UCT']).strip()
-                        docente_contraparte = str(fila['Academico Contraparte']).strip()
-                        periodo_semestre = str(fila['Semestre']).strip()
                         
-                        # Armamos el NUEVO párrafo redactado completo para estudiantes
-                        texto_parrafo_completo = f"Estudiante de la {universidad_origen}, participó en {articulo} {tipo_actividad} “{nombre_curso}”, con una duración de {horas_curso} horas académicas. Esta actividad fue dictada en colaboración por los académicos {docente_contraparte} ({universidad_origen}) y {docente_uct} (Universidad Católica de Temuco), durante el {periodo_semestre}. Su participación contribuyó al desarrollo de competencias interculturales y a la internacionalización del currículo."
+                        # Armado del Párrafo Principal con la plantilla exacta
+                        texto_p1 = f"Estudiante de la carrera de {carrera_contraparte} de la {universidad_contraparte}, participó exitosamente en el {tipo_actividad} “{nombre_actividad}”, desarrollado durante el {semestre} semestre de {anio} en el marco de las asignaturas {asignatura_uct} y {asignatura_contraparte}."
+                        texto_p2 = f"Esta experiencia de aprendizaje colaborativo internacional (Collaborative Online International Learning – COIL) fue implementada conjuntamente por la {universidad_contraparte} y la Universidad Católica de Temuco (Chile), promoviendo el intercambio académico e intercultural entre estudiantes de las carreras de {carrera_contraparte} y {carrera_uct} de ambas instituciones."
+                        texto_p3 = f"La actividad fue coordinada por los académicos {docente_uct} y {docente_contraparte}, y contempló una dedicación total de {horas} horas cronológicas."
                         
-                        # *** La Magia del Text Wrapping (Cortar Párrafo) ***
-                        parrafo_cortado = textwrap.fill(texto_parrafo_completo, width=75)
+                        texto_completo = f"{texto_p1}\n\n{texto_p2}\n\n{texto_p3}"
                         
-                        # Abrimos la imagen limpia
+                        # Formatear Párrafo (Wrapping)
+                        parrafo_cortado = textwrap.fill(texto_completo, width=80)
+                        texto_cierre = "Se extiende el presente certificado para los fines que el estudiante estime pertinentes."
+                        cierre_cortado = textwrap.fill(texto_cierre, width=80)
+                        
+                        # Imagen y Lienzo
                         certificado = Image.open(imagen_base).convert('RGB')
                         dibujo = ImageDraw.Draw(certificado)
                         
-                        # Obtenemos ancho y alto de la imagen para centrar
                         ancho_imagen, alto_imagen = certificado.size
                         centro_x = ancho_imagen / 2
                         
-                        # --- Dibujar Textos en la Imagen ---
+                        # --- Dibujar Textos ---
+                        # 1. Nombre del Estudiante (Azul Institucional)
+                        dibujo.text((centro_x, 950), nombre_alumno, fill="#0070C0", anchor="mm", font=fuente_nombre)
                         
-                        # 1. Nombre del Estudiante (Negrita, Grande, Centrado, Azul Institucional)
-                        dibujo.text((centro_x, 1000), nombre_alumno, fill="#0070C0", anchor="mm", font=fuente_nombre)
+                        # 2. Párrafo Principal (Gris, Centrado, con interlineado)
+                        dibujo.text((centro_x, 1120), parrafo_cortado, fill="#858784", anchor="ma", align="center", font=fuente_parrafo, spacing=18)
                         
-                        # 2. Párrafo Cortado (Normal, Mediano, Centrado, Gris, con interlineado)
-                        dibujo.text((centro_x, 1200), parrafo_cortado, fill="#858784", anchor="ma", align="center", font=fuente_parrafo, spacing=15)
+                        # 3. Frase de Cierre (Azul Institucional, Párrafo Aparte)
+                        dibujo.text((centro_x, 1620), cierre_cortado, fill="#0070C0", anchor="ma", align="center", font=fuente_cierre, spacing=12)
                         
-                        # 3. Fecha Automática (Esquina Inferior Derecha)
-                        dibujo.text((ancho_imagen - 100, alto_imagen - 150), texto_fecha_final, fill="black", anchor="rm", font=fuente_fecha)
+                        # 4. Fecha (Esquina Inferior Derecha)
+                        dibujo.text((ancho_imagen - 120, alto_imagen - 180), texto_fecha_final, fill="black", anchor="rm", font=fuente_fecha)
                         
-                        # Guardamos en memoria como PDF
+                        # Guardar PDF en memoria
                         buffer_pdf = io.BytesIO()
                         certificado.save(buffer_pdf, format="PDF")
+                        archivo_zip.writestr(f"Certificado_{nombre_alumno}.pdf", buffer_pdf.getvalue())
                         
-                        # Metemos el PDF al ZIP
-                        archivo_zip.writestr(f"Certificado_Estudiante_{nombre_alumno}.pdf", buffer_pdf.getvalue())
-                        
-                # Finalizado el ciclo
                 st.balloons()
                 
-                # Botón de Descarga del ZIP
+                # Botón de Descarga
                 st.download_button(
-                    label=f"⬇️ Descargar TODOS los certificados ({tipo_actividad}) (.zip)",
+                    label="⬇️ Descargar TODOS los certificados (.zip)",
                     data=buffer_zip.getvalue(),
-                    file_name=f"Certificados_{tipo_actividad}_UCT_{fecha_actual}.zip",
+                    file_name=f"Certificados_COIL_UCT_{fecha_actual}.zip",
                     mime="application/zip"
                 )
             
         else:
-            st.error("⚠️ El Excel no tiene las columnas correctas. Revisa la ayuda desplegable para ver el nuevo formato de 7 columnas.")
+            st.error("⚠️ El Excel no contiene una columna llamada 'Nombre'. Revisa la cabecera del archivo.")
             st.stop()
 
-# --- Firma final centrada ---
+# --- Firma final ---
 st.markdown("---")
 st.markdown("<p style='text-align: center; color: gray;'>Sistema Automatizado de Certificados UCT<br>Temuco, 2026<br><b>Desarrollado con ❤️ por Moisés Morales</b></p>", unsafe_allow_html=True)
