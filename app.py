@@ -110,11 +110,11 @@ if archivo_excel is not None and imagen_base is not None:
                         # --- Dibujar Textos en la Imagen ---
                         # ¡ATENCIÓN! Coordenadas (Y) ESTIMADAS. Ajustar números según tu base.
                         
-                        # 1. Título "CONSTANCIA" (Negrita, Grande, Centrado)
-                        dibujo.text((centro_x, 400), "CONSTANCIA", fill="black", anchor="mm", font=fuente_constancia)
+                      
+                        
                         
                         # 2. Nombre del Docente (Negrita, Grande, Centrado)
-                        dibujo.text((centro_x, 550), nombre_alumno, fill="black", anchor="mm", font=fuente_nombre)
+                        dibujo.text((centro_x, 550), nombre_alumno, fill="#0070C0", anchor="mm", font=fuente_nombre)
                         
                         # 3. Párrafo Cortado (Normal, Mediano, Centrado, align="center")
                         dibujo.text((centro_x, 700), parrafo_cortado, fill="black", anchor="ma", align="center", font=fuente_parrafo)
