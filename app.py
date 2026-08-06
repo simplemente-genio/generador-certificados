@@ -27,15 +27,6 @@ if archivo_excel is not None and imagen_base is not None:
         if all(columna in alumnos.columns for columna in columnas_necesarias):
             st.success("¡Datos correctos! Preparando la magia...")
             
-            # [!] IMPORTANTE: Todo tu código que crea el buffer_zip, 
-            # el ciclo 'for' que dibuja los certificados y el st.balloons()
-            # ahora debe ir aquí adentro. Tendrás que mover todas esas líneas 
-            # un espacio (un Tab) hacia la derecha para que pertenezcan a este 'if'.
-            
-        else:
-            # Si falta alguna columna, el programa se detiene y muestra esto
-            st.error("⚠️ El Excel debe tener exactamente estas 3 columnas: Nombre, Curso, Horas. ¡Por favor revisa tu archivo!")
-        
             # Creamos un "archivo ZIP virtual" en la memoria
             buffer_zip = io.BytesIO()
         
@@ -45,9 +36,9 @@ if archivo_excel is not None and imagen_base is not None:
                 fuente_texto = ImageFont.load_default()
             
                 for indice, fila in alumnos.iterrows():
-                nombre_alumno = fila['Nombre']
-                nombre_curso = fila['Curso']
-                cantidad_horas = str(fila['Horas'])
+                    nombre_alumno = fila['Nombre']
+                    nombre_curso = fila['Curso']
+                    cantidad_horas = str(fila['Horas'])
                 
                     # Abrimos la imagen que subió el usuario
                     certificado = Image.open(imagen_base)
@@ -75,4 +66,8 @@ if archivo_excel is not None and imagen_base is not None:
                 data=buffer_zip.getvalue(),
                 file_name="Certificados_Generados.zip",
                 mime="application/zip"
-        )
+            )
+            
+        else:
+            # Si falta alguna columna, el programa se detiene y muestra esto
+            st.error("⚠️ El Excel debe tener exactamente estas 3 columnas: Nombre, Curso, Horas. ¡Por favor revisa tu archivo!")
